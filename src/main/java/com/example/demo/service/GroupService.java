@@ -1,6 +1,6 @@
 package com.example.demo.service;
 
-import com.example.Midka.Dto.GroupDto;
+import com.example.demo.Dto.GroupDto;
 import java.util.List;
 
 public interface GroupService {

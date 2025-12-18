@@ -1,11 +1,11 @@
 package com.example.demo.service.impl;
 
-import com.example.Midka.Dto.GroupDto;
-import com.example.Midka.mapper.GroupMapper;
-import com.example.Midka.mapper.StudentMapper;
-import com.example.Midka.model.Group;
-import com.example.Midka.repositories.GroupRepository;
-import com.example.Midka.service.GroupService;
+import com.example.demo.Dto.GroupDto;
+import com.example.demo.mapper.GroupMapper;
+import com.example.demo.mapper.StudentMapper;
+import com.example.demo.model.Group;
+import com.example.demo.repositories.GroupRepository;
+import com.example.demo.service.GroupService;
 import org.springframework.stereotype.Service;
 import java.util.List;
 

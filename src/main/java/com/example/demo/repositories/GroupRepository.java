@@ -1,6 +1,6 @@
-package com.example.Midka.repositories;
+package com.example.demo.repositories;
 
-import com.example.Midka.model.Group;
+import com.example.demo.model.Group;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 

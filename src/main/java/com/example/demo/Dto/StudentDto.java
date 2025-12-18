@@ -1,7 +1,7 @@
 package com.example.demo.Dto;
 
-import com.example.Midka.model.Book;
-import com.example.Midka.model.Group;
+import com.example.demo.model.Book;
+import com.example.demo.model.Group;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

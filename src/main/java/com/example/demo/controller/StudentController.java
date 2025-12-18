@@ -1,8 +1,7 @@
 package com.example.demo.controller;
 
-import com.example.Midka.Dto.BookDto;
-import com.example.Midka.Dto.StudentDto;
-import com.example.Midka.service.impl.StudentServiceImpl;
+import com.example.demo.Dto.StudentDto;
+import com.example.demo.service.impl.StudentServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

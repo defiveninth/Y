@@ -1,11 +1,11 @@
 package com.example.demo.service.impl;
 
-import com.example.Midka.Dto.BookDto;
-import com.example.Midka.mapper.BookMapper;
-import com.example.Midka.repositories.BookRepository;
-import com.example.Midka.service.BookService;
+import com.example.demo.Dto.BookDto;
+import com.example.demo.mapper.BookMapper;
+import com.example.demo.repositories.BookRepository;
+import com.example.demo.service.BookService;
 
-import com.example.Midka.model.Book;
+import com.example.demo.model.Book;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

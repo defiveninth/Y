@@ -1,8 +1,8 @@
 package com.example.demo.mapper;
 
-import com.example.Midka.Dto.BookDto;
-import com.example.Midka.Dto.StudentDto;
-import com.example.Midka.model.Student;
+import com.example.demo.Dto.BookDto;
+import com.example.demo.Dto.StudentDto;
+import com.example.demo.model.Student;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

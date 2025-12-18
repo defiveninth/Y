@@ -1,14 +1,14 @@
 package com.example.demo.service.impl;
 
-import com.example.Midka.Dto.StudentDto;
-import com.example.Midka.mapper.BookMapper;
-import com.example.Midka.mapper.GroupMapper;
-import com.example.Midka.mapper.StudentMapper;
-import com.example.Midka.model.Student;
-import com.example.Midka.repositories.BookRepository;
-import com.example.Midka.repositories.GroupRepository;
-import com.example.Midka.repositories.StudentRepository;
-import com.example.Midka.service.StudentService;
+import com.example.demo.Dto.StudentDto;
+import com.example.demo.mapper.BookMapper;
+import com.example.demo.mapper.GroupMapper;
+import com.example.demo.mapper.StudentMapper;
+import com.example.demo.model.Student;
+import com.example.demo.repositories.BookRepository;
+import com.example.demo.repositories.GroupRepository;
+import com.example.demo.repositories.StudentRepository;
+import com.example.demo.service.StudentService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

@@ -1,7 +1,7 @@
 package com.example.demo.mapper;
 
-import com.example.Midka.Dto.GroupDto;
-import com.example.Midka.model.Group;
+import com.example.demo.Dto.GroupDto;
+import com.example.demo.model.Group;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

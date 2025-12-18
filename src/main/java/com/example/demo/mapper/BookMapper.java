@@ -1,10 +1,10 @@
 package com.example.demo.mapper;
 
-import com.example.Midka.Dto.BookDto;
+import com.example.demo.Dto.BookDto;
 import org.mapstruct.Mapper;
 
 
-import com.example.Midka.model.Book;
+import com.example.demo.model.Book;
 import java.util.List;
 
 @Mapper(componentModel = "spring")
