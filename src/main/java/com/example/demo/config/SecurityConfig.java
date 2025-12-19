@@ -44,7 +44,7 @@ public class SecurityConfig {
                 .passwordEncoder(passwordEncoder);
 
         http.authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/auth/**").permitAll()
+                .requestMatchers("/auth/**", "/book/**", "/group/**", "/student/**").permitAll()
                 .anyRequest().authenticated()
         );
 
