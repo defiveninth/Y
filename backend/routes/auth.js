@@ -1,7 +1,7 @@
 import express from "express"
 import bcrypt from "bcryptjs"
 import jwt from "jsonwebtoken"
-import { readJSON, writeJSON } from "../utils/db.js"
+import db from "../db/sqlite.js"
 import { JWT_SECRET } from "../middleware/auth.js"
 
 const router = express.Router()
@@ -10,39 +10,35 @@ const router = express.Router()
 router.post("/register", async (req, res) => {
   try {
     const { email, password, name } = req.body
-
     if (!email || !password || !name) {
       return res.status(400).json({ error: "All fields are required" })
     }
 
-    const users = await readJSON("users.json")
+    const existingUser = db
+      .prepare("SELECT * FROM users WHERE email = ?")
+      .get(email)
 
-    if (users.find((u) => u.email === email)) {
+    if (existingUser) {
       return res.status(400).json({ error: "Email already exists" })
     }
 
     const hashedPassword = await bcrypt.hash(password, 10)
-    const newUser = {
-      id: Date.now().toString(),
-      email,
-      password: hashedPassword,
-      name,
-      role: "customer",
-      createdAt: new Date().toISOString(),
-    }
+    const id = Date.now().toString()
 
-    users.push(newUser)
-    await writeJSON("users.json", users)
+    db.prepare(`
+      INSERT INTO users (id, email, password, name, role, createdAt)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `).run(id, email, hashedPassword, name, "customer", new Date().toISOString())
 
-    const token = jwt.sign({ id: newUser.id, email: newUser.email, role: newUser.role }, JWT_SECRET, {
+    const token = jwt.sign({ id, email, role: "customer" }, JWT_SECRET, {
       expiresIn: "7d",
     })
 
     res.status(201).json({
       token,
-      user: { id: newUser.id, email: newUser.email, name: newUser.name, role: newUser.role },
+      user: { id, email, name, role: "customer" },
     })
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: "Server error" })
   }
 })
@@ -52,29 +48,25 @@ router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body
 
-    if (!email || !password) {
-      return res.status(400).json({ error: "Email and password are required" })
-    }
+    const user = db
+      .prepare("SELECT * FROM users WHERE email = ?")
+      .get(email)
 
-    const users = await readJSON("users.json")
-    const user = users.find((u) => u.email === email)
-
-    if (!user) {
+    if (!user || !(await bcrypt.compare(password, user.password))) {
       return res.status(400).json({ error: "Invalid credentials" })
     }
 
-    const validPassword = await bcrypt.compare(password, user.password)
-    if (!validPassword) {
-      return res.status(400).json({ error: "Invalid credentials" })
-    }
-
-    const token = jwt.sign({ id: user.id, email: user.email, role: user.role }, JWT_SECRET, { expiresIn: "7d" })
+    const token = jwt.sign(
+      { id: user.id, email: user.email, role: user.role },
+      JWT_SECRET,
+      { expiresIn: "7d" }
+    )
 
     res.json({
       token,
       user: { id: user.id, email: user.email, name: user.name, role: user.role },
     })
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: "Server error" })
   }
 })

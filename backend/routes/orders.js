@@ -1,11 +1,11 @@
 import express from "express"
-import { readJSON, writeJSON } from "../utils/db.js"
+import db from "../db/sqlite.js"
 import { authenticateToken, authenticateAdmin } from "../middleware/auth.js"
 
 const router = express.Router()
 
 // Create order
-router.post("/", authenticateToken, async (req, res) => {
+router.post("/", authenticateToken, (req, res) => {
   try {
     const { items, total, deliveryAddress, deliveryDate } = req.body
 
@@ -13,11 +13,10 @@ router.post("/", authenticateToken, async (req, res) => {
       return res.status(400).json({ error: "All fields are required" })
     }
 
-    const orders = await readJSON("orders.json")
     const newOrder = {
       id: Date.now().toString(),
       userId: req.user.id,
-      items,
+      items: JSON.stringify(items),
       total: Number.parseFloat(total),
       deliveryAddress,
       deliveryDate,
@@ -25,51 +24,93 @@ router.post("/", authenticateToken, async (req, res) => {
       createdAt: new Date().toISOString(),
     }
 
-    orders.push(newOrder)
-    await writeJSON("orders.json", orders)
+    db.prepare(`
+      INSERT INTO orders (
+        id, userId, items, total, deliveryAddress,
+        deliveryDate, status, createdAt
+      )
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `).run(
+      newOrder.id,
+      newOrder.userId,
+      newOrder.items,
+      newOrder.total,
+      newOrder.deliveryAddress,
+      newOrder.deliveryDate,
+      newOrder.status,
+      newOrder.createdAt
+    )
 
-    res.status(201).json(newOrder)
+    res.status(201).json({
+      ...newOrder,
+      items: JSON.parse(newOrder.items),
+    })
   } catch (error) {
     res.status(500).json({ error: "Server error" })
   }
 })
 
-// Get user's orders
-router.get("/my-orders", authenticateToken, async (req, res) => {
+// Get logged-in user's orders
+router.get("/my-orders", authenticateToken, (req, res) => {
   try {
-    const orders = await readJSON("orders.json")
-    const userOrders = orders.filter((o) => o.userId === req.user.id)
-    res.json(userOrders)
+    const orders = db.prepare(`
+      SELECT * FROM orders WHERE userId = ?
+      ORDER BY createdAt DESC
+    `).all(req.user.id)
+
+    const parsedOrders = orders.map(order => ({
+      ...order,
+      items: JSON.parse(order.items),
+    }))
+
+    res.json(parsedOrders)
   } catch (error) {
     res.status(500).json({ error: "Server error" })
   }
 })
 
 // Get all orders (admin only)
-router.get("/", authenticateAdmin, async (req, res) => {
+router.get("/", authenticateAdmin, (req, res) => {
   try {
-    const orders = await readJSON("orders.json")
-    res.json(orders)
+    const orders = db.prepare(`
+      SELECT * FROM orders ORDER BY createdAt DESC
+    `).all()
+
+    const parsedOrders = orders.map(order => ({
+      ...order,
+      items: JSON.parse(order.items),
+    }))
+
+    res.json(parsedOrders)
   } catch (error) {
     res.status(500).json({ error: "Server error" })
   }
 })
 
 // Update order status (admin only)
-router.patch("/:id/status", authenticateAdmin, async (req, res) => {
+router.patch("/:id/status", authenticateAdmin, (req, res) => {
   try {
     const { status } = req.body
-    const orders = await readJSON("orders.json")
-    const orderIndex = orders.findIndex((o) => o.id === req.params.id)
 
-    if (orderIndex === -1) {
+    if (!status) {
+      return res.status(400).json({ error: "Status is required" })
+    }
+
+    const result = db.prepare(`
+      UPDATE orders SET status = ? WHERE id = ?
+    `).run(status, req.params.id)
+
+    if (result.changes === 0) {
       return res.status(404).json({ error: "Order not found" })
     }
 
-    orders[orderIndex].status = status
-    await writeJSON("orders.json", orders)
+    const updatedOrder = db
+      .prepare("SELECT * FROM orders WHERE id = ?")
+      .get(req.params.id)
 
-    res.json(orders[orderIndex])
+    updatedOrder.items = JSON.parse(updatedOrder.items)
+
+    res.json(updatedOrder)
   } catch (error) {
     res.status(500).json({ error: "Server error" })
   }

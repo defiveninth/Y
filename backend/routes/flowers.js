@@ -1,99 +1,79 @@
 import express from "express"
-import { readJSON, writeJSON } from "../utils/db.js"
+import db from "../db/sqlite.js"
 import { authenticateAdmin } from "../middleware/auth.js"
 
 const router = express.Router()
 
-// Get all flowers
-router.get("/", async (req, res) => {
-  try {
-    const flowers = await readJSON("flowers.json")
-    res.json(flowers)
-  } catch (error) {
-    res.status(500).json({ error: "Server error" })
-  }
+router.get("/", (req, res) => {
+  const flowers = db.prepare("SELECT * FROM flowers").all()
+  res.json(flowers)
 })
 
-// Add flower (admin only)
-router.post("/", authenticateAdmin, async (req, res) => {
-  try {
-    const { name, price, description, image, category } = req.body
-
-    if (!name || !price) {
-      return res.status(400).json({ error: "Name and price are required" })
-    }
-
-    const flowers = await readJSON("flowers.json")
-    const newFlower = {
-      id: Date.now().toString(),
-      name,
-      price: Number.parseFloat(price),
-      description: description || "",
-      image: image || "",
-      category: category || "other",
-      createdAt: new Date().toISOString(),
-    }
-
-    flowers.push(newFlower)
-    await writeJSON("flowers.json", flowers)
-
-    res.status(201).json(newFlower)
-  } catch (error) {
-    res.status(500).json({ error: "Server error" })
+router.post("/", authenticateAdmin, (req, res) => {
+  const { name, price, description, image, category } = req.body
+  if (!name || !price) {
+    return res.status(400).json({ error: "Name and price are required" })
   }
+
+  const flower = {
+    id: Date.now().toString(),
+    name,
+    price: Number(price),
+    description: description || "",
+    image: image || "",
+    category: category || "other",
+    createdAt: new Date().toISOString(),
+  }
+
+  db.prepare(`
+    INSERT INTO flowers VALUES (?, ?, ?, ?, ?, ?, ?, NULL)
+  `).run(
+    flower.id,
+    flower.name,
+    flower.price,
+    flower.description,
+    flower.image,
+    flower.category,
+    flower.createdAt
+  )
+
+  res.status(201).json(flower)
 })
 
-// Update flower (admin only)
-router.put("/:id", authenticateAdmin, async (req, res) => {
-  try {
-    const { name, price, description, image, category } = req.body
+router.put("/:id", authenticateAdmin, (req, res) => {
+  const { name, price, description, image, category } = req.body
 
-    if (!name || !price) {
-      return res.status(400).json({ error: "Name and price are required" })
-    }
+  const result = db.prepare(`
+    UPDATE flowers SET
+      name = ?, price = ?, description = ?, image = ?, category = ?, updatedAt = ?
+    WHERE id = ?
+  `).run(
+    name,
+    Number(price),
+    description || "",
+    image || "",
+    category || "other",
+    new Date().toISOString(),
+    req.params.id
+  )
 
-    const flowers = await readJSON("flowers.json")
-    const flowerIndex = flowers.findIndex((f) => f.id == req.params.id)
-
-
-    if (flowerIndex === -1) {
-      return res.status(404).json({ error: "Flower not found" })
-    }
-
-    const updatedFlower = {
-      ...flowers[flowerIndex],
-      name,
-      price: Number.parseFloat(price),
-      description: description || "",
-      image: image || "",
-      category: category || "other",
-      updatedAt: new Date().toISOString(),
-    }
-
-    flowers[flowerIndex] = updatedFlower
-    await writeJSON("flowers.json", flowers)
-
-    res.json(updatedFlower)
-  } catch (error) {
-    res.status(500).json({ error: "Server error" })
+  if (result.changes === 0) {
+    return res.status(404).json({ error: "Flower not found" })
   }
+
+  res.json({ message: "Flower updated" })
 })
 
-// Delete flower (admin only)
-router.delete("/:id", authenticateAdmin, async (req, res) => {
-  try {
-    const flowers = await readJSON("flowers.json")
-    const filteredFlowers = flowers.filter((f) => f.id !== req.params.id)
+router.delete("/:id", authenticateAdmin, (req, res) => {
+  const result = db
+    .prepare("DELETE FROM flowers WHERE id = ?")
+    .run(req.params.id)
 
-    if (flowers.length === filteredFlowers.length) {
-      return res.status(404).json({ error: "Flower not found" })
-    }
-
-    await writeJSON("flowers.json", filteredFlowers)
-    res.json({ message: "Flower deleted" })
-  } catch (error) {
-    res.status(500).json({ error: "Server error" })
+  if (result.changes === 0) {
+    return res.status(404).json({ error: "Flower not found" })
   }
+
+  res.json({ message: "Flower deleted" })
 })
 
 export default router

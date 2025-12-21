@@ -1,15 +1,18 @@
 import express from "express"
-import { readJSON } from "../utils/db.js"
+import db from "../db/sqlite.js"
 import { authenticateAdmin } from "../middleware/auth.js"
 
 const router = express.Router()
 
-// Get all users (admin only)
-router.get("/", authenticateAdmin, async (req, res) => {
+router.get("/", authenticateAdmin, (req, res) => {
   try {
-    const users = await readJSON("users.json")
-    const usersWithoutPasswords = users.map(({ password, ...user }) => user)
-    res.json(usersWithoutPasswords)
+    const users = db.prepare(`
+      SELECT id, email, name, role, createdAt
+      FROM users
+      ORDER BY createdAt DESC
+    `).all()
+
+    res.json(users)
   } catch (error) {
     res.status(500).json({ error: "Server error" })
   }
