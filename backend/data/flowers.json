@@ -1,0 +1,38 @@
+[
+  {
+    "id": "1",
+    "name": "Red Roses Bouquet",
+    "price": 45.99,
+    "description": "Beautiful arrangement of 12 fresh red roses",
+    "image": "/placeholder.svg?height=300&width=300",
+    "category": "roses",
+    "createdAt": "2025-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "2",
+    "name": "Tulip Garden Mix",
+    "price": 32.99,
+    "description": "Colorful mix of spring tulips",
+    "image": "/placeholder.svg?height=300&width=300",
+    "category": "tulips",
+    "createdAt": "2025-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "3",
+    "name": "Sunflower Sunshine",
+    "price": 38.99,
+    "description": "Bright and cheerful sunflowers",
+    "image": "/placeholder.svg?height=300&width=300",
+    "category": "sunflowers",
+    "createdAt": "2025-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "4",
+    "name": "Lily Elegance",
+    "price": 52.99,
+    "description": "Elegant white lilies arrangement",
+    "image": "/placeholder.svg?height=300&width=300",
+    "category": "lilies",
+    "createdAt": "2025-01-01T00:00:00.000Z"
+  }
+]
