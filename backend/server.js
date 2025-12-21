@@ -8,7 +8,6 @@ import usersRoutes from "./routes/users.js"
 const app = express()
 const PORT = 3000
 
-// Middleware
 app.use(cors())
 app.use(express.json())
 
@@ -21,7 +20,6 @@ app.get("/api/health", (req, res) => {
   res.json({ status: "ok", message: "Server is running" })
 })
 
-// Routes
 app.use("/api/auth", authRoutes)
 app.use("/api/flowers", flowersRoutes)
 app.use("/api/orders", ordersRoutes)

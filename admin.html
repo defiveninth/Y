@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard | Bloom & Beauty</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <header class="bg-light text-center py-3 shadow">
+    <h1 class="text-danger fw-bold">Bloom & Beauty - Admin</h1>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light justify-content-center">
+      <div class="navbar-nav">
+        <a class="nav-link fw-bold" href="index.html">Home</a>
+        <a class="nav-link fw-bold" href="admin.html">Admin Dashboard</a>
+        <div id="auth-nav"></div>
+      </div>
+    </nav>
+  </header>
+
+  <div class="container my-5">
+    <h2 class="text-danger mb-4">Admin Dashboard</h2>
+    
+    <ul class="nav nav-tabs mb-4" id="adminTabs" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="flowers-tab" data-bs-toggle="tab" data-bs-target="#flowers-panel" type="button">
+          Manage Flowers
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="orders-tab" data-bs-toggle="tab" data-bs-target="#orders-panel" type="button">
+          Manage Orders
+        </button>
+      </li>
+    </ul>
+    
+    <div class="tab-content" id="adminTabContent">
+      <!-- Flowers Management Tab -->
+      <div class="tab-pane fade show active" id="flowers-panel">
+        <div class="card mb-4">
+          <div class="card-body">
+            <h4 class="mb-3" id="form-title">Add New Flower</h4>
+            <div id="flower-error" class="alert alert-danger d-none"></div>
+            <div id="flower-success" class="alert alert-success d-none"></div>
+            
+            <form id="add-flower-form">
+              <input type="hidden" id="flower-id">
+              
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="flower-name" class="form-label">Flower Name</label>
+                  <input type="text" class="form-control" id="flower-name" required>
+                </div>
+                
+                <div class="col-md-6 mb-3">
+                  <label for="flower-price" class="form-label">Price (KZT)</label>
+                  <input class="form-control" id="flower-price" required min="0">
+                </div>
+              </div>
+              
+              <div class="mb-3">
+                <label for="flower-description" class="form-label">Description</label>
+                <textarea class="form-control" id="flower-description" rows="2"></textarea>
+              </div>
+              
+              <div class="mb-3">
+                <label for="flower-image" class="form-label">Image URL</label>
+                <input type="url" class="form-control" id="flower-image" placeholder="https://example.com/image.jpg">
+              </div>
+              
+              <div class="mb-3">
+                <label for="flower-category" class="form-label">Category</label>
+                <select class="form-select" id="flower-category">
+                  <option value="roses">Roses</option>
+                  <option value="tulips">Tulips</option>
+                  <option value="peonies">Peonies</option>
+                  <option value="sunflowers">Sunflowers</option>
+                  <option value="mixed">Mixed Bouquet</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              
+              <button type="submit" class="btn btn-danger" id="submit-btn">Add Flower</button>
+              <button type="button" class="btn btn-secondary d-none" id="cancel-btn" onclick="cancelEdit()">Cancel</button>
+            </form>
+          </div>
+        </div>
+        
+        <div class="card">
+          <div class="card-body">
+            <h4 class="mb-3">All Flowers</h4>
+            
+            <div id="flowers-loading" class="text-center my-3">
+              <div class="spinner-border text-danger" role="status"></div>
+            </div>
+            
+            <div id="flowers-table"></div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Orders Management Tab -->
+      <div class="tab-pane fade" id="orders-panel">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="mb-3">All Orders</h4>
+            
+            <div id="orders-loading" class="text-center my-3">
+              <div class="spinner-border text-danger" role="status"></div>
+            </div>
+            
+            <div id="orders-table"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="bg-danger text-white text-center py-3 mt-5">
+    &copy; 2025 Bloom & Beauty | Designed by Aksunkar
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="client/js/api.js"></script>
+  <script src="client/js/auth.js"></script>
+  <script>
+    // Protect admin page
+    if (!requireAdmin()) {
+      throw new Error("Unauthorized")
+    }
+    
+    // Load flowers
+    async function loadFlowers() {
+      const loading = document.getElementById("flowers-loading")
+      const table = document.getElementById("flowers-table")
+      
+      try {
+        const flowers = await flowersAPI.getAll()
+        loading.style.display = "none"
+        
+        if (flowers.length === 0) {
+          table.innerHTML = '<p class="text-center">No flowers yet</p>'
+          return
+        }
+        
+        table.innerHTML = `
+          <div class="table-responsive">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>Image</th>
+                  <th>Name</th>
+                  <th>Price</th>
+                  <th>Category</th>
+                  <th>Description</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${flowers.map(flower => `
+                  <tr>
+                    <td>
+                      ${flower.image ? `<img src="${flower.image}" style="width: 50px; height: 50px; object-fit: cover;">` : 'No image'}
+                    </td>
+                    <td>${flower.name}</td>
+                    <td>${flower.price} KZT</td>
+                    <td>${flower.category || 'N/A'}</td>
+                    <td>${flower.description || 'N/A'}</td>
+                    <td>
+                      <button class="btn btn-sm btn-warning me-1" onclick='editFlower(${JSON.stringify(flower)})'>Edit</button>
+                      <button class="btn btn-sm btn-danger" onclick="deleteFlower('${flower.id}')">Delete</button>
+                    </td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        `
+      } catch (error) {
+        loading.style.display = "none"
+        table.innerHTML = `<div class="alert alert-danger">Error: ${error.message}</div>`
+      }
+    }
+    
+    // Add flower
+    document.getElementById("add-flower-form").addEventListener("submit", async (e) => {
+      e.preventDefault()
+      
+      const errorDiv = document.getElementById("flower-error")
+      const successDiv = document.getElementById("flower-success")
+      
+      errorDiv.classList.add("d-none")
+      successDiv.classList.add("d-none")
+      
+      try {
+        const flowerData = {
+          name: document.getElementById("flower-name").value,
+          price: parseFloat(document.getElementById("flower-price").value),
+          description: document.getElementById("flower-description").value,
+          image: document.getElementById("flower-image").value,
+          category: document.getElementById("flower-category").value,
+        }
+        
+        const flowerId = document.getElementById("flower-id").value
+        
+        if (flowerId) {
+          // Update existing flower
+          await flowersAPI.update(flowerId, flowerData)
+          successDiv.textContent = "Flower updated successfully!"
+        } else {
+          // Add new flower
+          await flowersAPI.create(flowerData)
+          successDiv.textContent = "Flower added successfully!"
+        }
+        
+        successDiv.classList.remove("d-none")
+        cancelEdit()
+        loadFlowers()
+      } catch (error) {
+        errorDiv.textContent = error.message
+        errorDiv.classList.remove("d-none")
+      }
+    })
+    
+    // Edit flower
+    function editFlower(flower) {
+      document.getElementById("flower-id").value = flower.id
+      document.getElementById("flower-name").value = flower.name
+      document.getElementById("flower-price").value = flower.price
+      document.getElementById("flower-description").value = flower.description || ""
+      document.getElementById("flower-image").value = flower.image || ""
+      document.getElementById("flower-category").value = flower.category || "other"
+      
+      document.getElementById("form-title").textContent = "Edit Flower"
+      document.getElementById("submit-btn").textContent = "Update Flower"
+      document.getElementById("cancel-btn").classList.remove("d-none")
+      
+      // Scroll to form
+      document.getElementById("add-flower-form").scrollIntoView({ behavior: "smooth" })
+    }
+    
+    // Cancel edit
+    function cancelEdit() {
+      document.getElementById("add-flower-form").reset()
+      document.getElementById("flower-id").value = ""
+      document.getElementById("form-title").textContent = "Add New Flower"
+      document.getElementById("submit-btn").textContent = "Add Flower"
+      document.getElementById("cancel-btn").classList.add("d-none")
+    }
+    
+    // Delete flower
+    async function deleteFlower(id) {
+      if (!confirm("Are you sure you want to delete this flower?")) return
+      
+      try {
+        await flowersAPI.delete(id)
+        loadFlowers()
+      } catch (error) {
+        alert(`Error: ${error.message}`)
+      }
+    }
+    
+    // Load orders
+    async function loadOrders() {
+      const loading = document.getElementById("orders-loading")
+      const table = document.getElementById("orders-table")
+      
+      try {
+        const orders = await ordersAPI.getAll()
+        loading.style.display = "none"
+        
+        if (orders.length === 0) {
+          table.innerHTML = '<p class="text-center">No orders yet</p>'
+          return
+        }
+        
+        table.innerHTML = `
+          <div class="table-responsive">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>Customer</th>
+                  <th>Total</th>
+                  <th>Delivery Date</th>
+                  <th>Address</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${orders.map(order => `
+                  <tr>
+                    <td>#${order.id}</td>
+                    <td>${order.userId}</td>
+                    <td>${order.total} KZT</td>
+                    <td>${new Date(order.deliveryDate).toLocaleDateString()}</td>
+                    <td>${order.deliveryAddress}</td>
+                    <td>
+                      <select class="form-select form-select-sm" onchange="updateOrderStatus('${order.id}', this.value)">
+                        <option value="pending" ${order.status === 'pending' ? 'selected' : ''}>Pending</option>
+                        <option value="preparing" ${order.status === 'preparing' ? 'selected' : ''}>Preparing</option>
+                        <option value="delivering" ${order.status === 'delivering' ? 'selected' : ''}>Delivering</option>
+                        <option value="delivered" ${order.status === 'delivered' ? 'selected' : ''}>Delivered</option>
+                        <option value="cancelled" ${order.status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
+                      </select>
+                    </td>
+                    <td>
+                      <button class="btn btn-sm btn-info" onclick="viewOrderDetails('${order.id}')">View</button>
+                    </td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        `
+      } catch (error) {
+        loading.style.display = "none"
+        table.innerHTML = `<div class="alert alert-danger">Error: ${error.message}</div>`
+      }
+    }
+    
+    // Update order status
+    async function updateOrderStatus(orderId, status) {
+      try {
+        await ordersAPI.updateStatus(orderId, status)
+        alert("Order status updated successfully!")
+      } catch (error) {
+        alert(`Error: ${error.message}`)
+        loadOrders()
+      }
+    }
+    
+    // View order details
+    function viewOrderDetails(orderId) {
+      ordersAPI.getAll().then(orders => {
+        const order = orders.find(o => o.id === orderId)
+        if (order) {
+          alert(`Order Details:\n\nItems:\n${order.items.map(i => `- ${i.name} x ${i.quantity}`).join('\n')}\n\nTotal: ${order.total} KZT\nAddress: ${order.deliveryAddress}`)
+        }
+      })
+    }
+    
+    // Initialize
+    document.addEventListener("DOMContentLoaded", () => {
+      loadFlowers()
+    })
+    
+    // Load orders when tab is clicked
+    document.getElementById("orders-tab").addEventListener("click", () => {
+      loadOrders()
+    })
+  </script>
+</body>
+</html>

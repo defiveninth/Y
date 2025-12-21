@@ -1,1 +1,59 @@
-[]
+[
+  {
+    "id": "1766342269049",
+    "userId": "1766342020050",
+    "items": [
+      {
+        "flowerId": "1",
+        "name": "Red Roses Bouquet",
+        "price": 45.99,
+        "quantity": 1
+      }
+    ],
+    "total": 45.99,
+    "deliveryAddress": "al farabi avenue",
+    "deliveryDate": "2025-12-21",
+    "status": "cancelled",
+    "createdAt": "2025-12-21T18:37:49.049Z"
+  },
+  {
+    "id": "1766343239082",
+    "userId": "admin001",
+    "items": [
+      {
+        "flowerId": "2",
+        "name": "Tulip Garden Mix",
+        "price": 32.99,
+        "quantity": 1
+      }
+    ],
+    "total": 32.99,
+    "deliveryAddress": "al farabi avenue",
+    "deliveryDate": "2025-12-21",
+    "status": "pending",
+    "createdAt": "2025-12-21T18:53:59.082Z"
+  },
+  {
+    "id": "1766343306297",
+    "userId": "1766343274031",
+    "items": [
+      {
+        "flowerId": "2",
+        "name": "Tulip Garden Mix",
+        "price": 32.99,
+        "quantity": 1
+      },
+      {
+        "flowerId": "3",
+        "name": "Sunflower Sunshine",
+        "price": 38.99,
+        "quantity": 1
+      }
+    ],
+    "total": 71.98,
+    "deliveryAddress": "al fara",
+    "deliveryDate": "2025-12-21",
+    "status": "pending",
+    "createdAt": "2025-12-21T18:55:06.297Z"
+  }
+]

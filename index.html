@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bloom & Beauty | Fresh Flowers for Every Occasion</title>
@@ -10,32 +9,59 @@
 </head>
 
 <body>
-  <!-- Header -->
-  <header class="bg-light text-center py-3 fixed-top shadow">
-    <h1 class="text-danger fw-bold">Bloom & Beauty</h1>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light justify-content-center">
-      <div class="navbar-nav">
-        <a class="nav-link fw-bold" href="index.html">Home</a>
-        <a class="nav-link fw-bold" href="flowers.html">Flowers</a>
-        <a class="nav-link fw-bold" href="about.html">About</a>
-        <a class="nav-link fw-bold" href="delivery.html">Delivery</a>
-        <a class="nav-link fw-bold" href="contact.html">Contact</a>
-        <a class="nav-link fw-bold" href="js-tasks.html">JS Tasks</a>
-        <a class="nav-link fw-bold" href="registration.html">Registration</a>
-
+  <header class=" bg-white shadow-sm">
+    <div class="container-fluid px-4">
+      <div class="row align-items-center py-3">
+        <div class="col-md-3">
+          <a href="index.html" class="text-decoration-none">
+            <h1 class="text-danger fw-bold mb-0 fs-3">Bloom & Beauty</h1>
+          </a>
+        </div>
+        
+        <nav class="col-md-6">
+          <ul class="nav justify-content-center gap-3">
+            <li class="nav-item">
+              <a class="nav-link text-dark fw-semibold" href="index.html">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-dark fw-semibold" href="flowers.html">Flowers</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-dark fw-semibold" href="about.html">About</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-dark fw-semibold" href="delivery.html">Delivery</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-dark fw-semibold" href="contact.html">Contact</a>
+            </li>
+          </ul>
+        </nav>
+        
+        <div class="col-md-3">
+          <div class="d-flex align-items-center justify-content-end gap-3">
+            <div id="auth-nav" class="d-flex gap-2"></div>
+            <a class="btn btn-outline-danger position-relative" href="cart.html">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5zM3.102 4l1.313 7h8.17l1.313-7H3.102zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+              </svg>
+              <span id="cart-count" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display: none; font-size: 0.65rem;">0</span>
+            </a>
+          </div>
+        </div>
       </div>
-    </nav>
+    </div>
+    
+    <!-- Promo Banner -->
+    <div class="alert alert-pink text-center fw-semibold mb-0 py-2" style="border-radius: 0;">
+      Special Offer: Free delivery on orders over 10,000 KZT!
+    </div>
   </header>
-
-  <!-- Notification -->
-  <div class="alert alert-pink text-center fw-bold mt-5 sticky-top">
-    🌸 Special Offer: Free delivery on orders over 10,000 KZT!
-  </div>
 
   <!-- Hero Section -->
   <section class="hero position-relative text-center text-white">
     <img src="https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=1600&q=80"
-         class="img-fluid w-100" style="filter: brightness(70%); height: 450px; object-fit: cover;">
+         class="img-fluid w-100" style="filter: brightness(70%); height: 450px; object-fit: cover;" alt="Beautiful flowers">
     <div class="position-absolute top-50 start-50 translate-middle">
       <h2 class="display-5 fw-bold text-light">Fresh Flowers. Beautiful Moments.</h2>
       <p>We deliver love and joy through the art of flowers — handcrafted with care, designed with passion.</p>
@@ -49,7 +75,7 @@
     <div class="row g-4">
       <div class="col-md-4">
         <div class="card shadow-sm">
-          <img src="https://i.pinimg.com/1200x/13/f3/e3/13f3e38ec668917874ec34906ffb5414.jpg" class="card-img-top">
+          <img src="https://i.pinimg.com/1200x/13/f3/e3/13f3e38ec668917874ec34906ffb5414.jpg" class="card-img-top" alt="Rose Delight">
           <div class="card-body">
             <h5 class="card-title text-danger">Rose Delight</h5>
             <p>Classic red roses that express timeless love.</p>
@@ -59,7 +85,7 @@
 
       <div class="col-md-4">
         <div class="card shadow-sm">
-          <img src="https://i.pinimg.com/1200x/f0/e9/40/f0e940712df91189e48ccb20447b1ea3.jpg" class="card-img-top">
+          <img src="https://i.pinimg.com/1200x/f0/e9/40/f0e940712df91189e48ccb20447b1ea3.jpg" class="card-img-top" alt="Peony Charm">
           <div class="card-body">
             <h5 class="card-title text-danger">Peony Charm</h5>
             <p>Soft pastel blooms for gentle souls.</p>
@@ -69,7 +95,7 @@
 
       <div class="col-md-4">
         <div class="card shadow-sm">
-          <img src="https://i.pinimg.com/1200x/b9/71/2b/b9712bea86067e6b1363f73b00c40206.jpg" class="card-img-top">
+          <img src="https://i.pinimg.com/1200x/b9/71/2b/b9712bea86067e6b1363f73b00c40206.jpg" class="card-img-top" alt="Sunny Joy">
           <div class="card-body">
             <h5 class="card-title text-danger">Sunny Joy</h5>
             <p>Bright sunflowers to bring warmth to every heart.</p>
@@ -83,28 +109,21 @@
   <section class="bg-light text-center py-5">
     <h2 class="text-danger mb-3">Why Choose Bloom & Beauty?</h2>
     <ul class="list-unstyled">
-      <li>🌸 Same-day delivery within the city</li>
-      <li>💐 Custom arrangements for every event</li>
-      <li>🌿 Eco-friendly packaging</li>
-      <li>❤️ 100% satisfaction guaranteed</li>
+      <li>Same-day delivery within the city</li>
+      <li>Custom arrangements for every event</li>
+      <li>Eco-friendly packaging</li>
+      <li>100% satisfaction guaranteed</li>
     </ul>
   </section>
 
   <!-- Footer -->
-  <footer class="bg-danger text-white text-center py-2 fixed-bottom">
-    © 2025 Bloom & Beauty | Designed by Aksunkar
+  <footer class="bg-danger text-white text-center py-3 mt-5">
+    &copy; 2025 Bloom & Beauty | Designed by Aksunkar
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- ...весь HTML страницы... -->
-
-  <!-- Скрипт: вывести все теги в консоль -->
-  <script>
-    const allTags = document.querySelectorAll("*");
-    allTags.forEach(tag => {
-      console.log(tag.tagName);
-    });
-  </script>
+  <script src="client/js/api.js"></script>
+  <script src="client/js/auth.js"></script>
+  <script src="client/js/cart.js"></script>
 </body>
 </html>

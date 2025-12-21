@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bloom & Beauty | Flowers</title>
@@ -10,7 +9,7 @@
 </head>
 
 <body>
-  <header class="bg-light text-center py-3 fixed-top shadow">
+  <header class="bg-light text-center py-3 shadow">
     <h1 class="text-danger fw-bold">Bloom & Beauty</h1>
     <nav class="navbar navbar-expand-lg navbar-light bg-light justify-content-center">
       <div class="navbar-nav">
@@ -19,74 +18,86 @@
         <a class="nav-link fw-bold" href="about.html">About</a>
         <a class="nav-link fw-bold" href="delivery.html">Delivery</a>
         <a class="nav-link fw-bold" href="contact.html">Contact</a>
-        <a class="nav-link fw-bold" href="js-tasks.html">JS Tasks</a>
-        <a class="nav-link fw-bold" href="registration.html">Registration</a>
-
-
+        <div id="auth-nav"></div>
+        <a class="nav-link fw-bold position-relative" href="cart.html">
+          Cart
+          <span id="cart-count" class="badge bg-danger rounded-circle position-absolute top-0 start-100 translate-middle" style="display: none;">0</span>
+        </a>
       </div>
     </nav>
   </header>
 
-  <div class="alert alert-pink text-center fw-bold mt-5 sticky-top">
-    🌷 Discover our exclusive seasonal collection!
+  <div class="alert alert-pink text-center fw-bold mt-5">
+    Discover our exclusive seasonal collection!
   </div>
 
-  <main class="container my-5 text-center">
-    <h2 class="text-danger mb-4">Our Flower Collection</h2>
-    <div class="row g-4">
-      <div class="col-md-4">
-        <div class="card shadow-sm">
-          <img src="https://i.pinimg.com/1200x/13/f3/e3/13f3e38ec668917874ec34906ffb5414.jpg" class="card-img-top">
-          <div class="card-body">
-            <h5 class="card-title text-danger">Roses</h5>
-            <p>Elegant and timeless flowers perfect for love and romance.</p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="card shadow-sm">
-          <img src="https://i.pinimg.com/1200x/98/6f/bd/986fbdd985083d4818586a2b80038350.jpg" class="card-img-top">
-          <div class="card-body">
-            <h5 class="card-title text-danger">Tulips</h5>
-            <p>Bright and cheerful blooms that symbolize happiness.</p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="card shadow-sm">
-          <img src="https://i.pinimg.com/1200x/f0/e9/40/f0e940712df91189e48ccb20447b1ea3.jpg" class="card-img-top">
-          <div class="card-body">
-            <h5 class="card-title text-danger">Peonies</h5>
-            <p>Luxurious flowers known for their lush and soft petals.</p>
-          </div>
-        </div>
+  <main class="container my-5">
+    <h2 class="text-danger mb-4 text-center">Our Flower Collection</h2>
+    
+    <div id="loading" class="text-center my-5">
+      <div class="spinner-border text-danger" role="status">
+        <span class="visually-hidden">Loading...</span>
       </div>
     </div>
-    <button class="btn btn-outline-danger mt-3" onclick="changeStyles()">Изменить стили страницы</button>
+    
+    <div id="flowers-grid" class="row g-4"></div>
   </main>
 
-  <footer class="bg-danger text-white text-center py-2 fixed-bottom">
-    © 2025 Bloom & Beauty | Designed by Aksunkar
+  <footer class="bg-danger text-white text-center py-3 mt-5">
+    &copy; 2025 Bloom & Beauty | Designed by Aksunkar
   </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="client/js/api.js"></script>
+  <script src="client/js/auth.js"></script>
+  <script src="client/js/cart.js"></script>
   <script>
-  function changeStyles() {
-    // фон, шрифт, цвет текста
-    document.body.style.backgroundColor = "#ffe4ec";
-    document.body.style.color = "#333";
-    document.body.style.fontFamily = "Arial, sans-serif";
-
-    // заменяю первую картинку
-    const img = document.querySelector("img");
-    if (img) {
-      img.src = "https://i.pinimg.com/1200x/2e/c3/66/2ec3662e858f625182e438d09c51ace6.jpg";
-      img.alt = "Updated image via JS";
+    async function loadFlowers() {
+      const loading = document.getElementById("loading")
+      const grid = document.getElementById("flowers-grid")
+      
+      try {
+        const flowers = await flowersAPI.getAll()
+        loading.style.display = "none"
+        
+        if (flowers.length === 0) {
+          grid.innerHTML = '<p class="text-center">No flowers available yet.</p>'
+          return
+        }
+        
+        grid.innerHTML = flowers.map(flower => `
+          <div class="col-md-4">
+            <div class="card shadow-sm h-100">
+              ${flower.image ? `<img src="${flower.image}" class="card-img-top" alt="${flower.name}" style="height: 300px; object-fit: cover;">` : '<div class="bg-light" style="height: 300px; display: flex; align-items: center; justify-content: center;">No image</div>'}
+              <div class="card-body d-flex flex-column">
+                <h5 class="card-title text-danger">${flower.name}</h5>
+                <p class="card-text flex-grow-1">${flower.description || 'Beautiful flowers'}</p>
+                <p class="fw-bold text-danger fs-5">${flower.price} KZT</p>
+                <button class="btn btn-danger w-100" onclick="addFlowerToCart('${flower.id}')">
+                  Add to Cart
+                </button>
+              </div>
+            </div>
+          </div>
+        `).join('')
+      } catch (error) {
+        loading.style.display = "none"
+        grid.innerHTML = `<p class="text-center text-danger">Error loading flowers: ${error.message}</p>`
+      }
     }
-
-    // дополнительный визуальный эффект — изменим все кнопки
-    document.querySelectorAll("button").forEach(btn => {
-      btn.style.borderRadius = "20px";
-    });
-  }
-</script>
+    
+    function addFlowerToCart(flowerId) {
+      flowersAPI.getAll().then(flowers => {
+        const flower = flowers.find(f => f.id === flowerId)
+        if (flower) {
+          addToCart(flower)
+          alert(`${flower.name} added to cart!`)
+        }
+      })
+    }
+    
+    // Load flowers on page load
+    document.addEventListener("DOMContentLoaded", loadFlowers)
+  </script>
 </body>
 </html>

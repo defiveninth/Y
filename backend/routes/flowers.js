@@ -43,6 +43,42 @@ router.post("/", authenticateAdmin, async (req, res) => {
   }
 })
 
+// Update flower (admin only)
+router.put("/:id", authenticateAdmin, async (req, res) => {
+  try {
+    const { name, price, description, image, category } = req.body
+
+    if (!name || !price) {
+      return res.status(400).json({ error: "Name and price are required" })
+    }
+
+    const flowers = await readJSON("flowers.json")
+    const flowerIndex = flowers.findIndex((f) => f.id == req.params.id)
+
+
+    if (flowerIndex === -1) {
+      return res.status(404).json({ error: "Flower not found" })
+    }
+
+    const updatedFlower = {
+      ...flowers[flowerIndex],
+      name,
+      price: Number.parseFloat(price),
+      description: description || "",
+      image: image || "",
+      category: category || "other",
+      updatedAt: new Date().toISOString(),
+    }
+
+    flowers[flowerIndex] = updatedFlower
+    await writeJSON("flowers.json", flowers)
+
+    res.json(updatedFlower)
+  } catch (error) {
+    res.status(500).json({ error: "Server error" })
+  }
+})
+
 // Delete flower (admin only)
 router.delete("/:id", authenticateAdmin, async (req, res) => {
   try {

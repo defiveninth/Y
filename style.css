@@ -1,16 +1,13 @@
 body {
   background-color: #fff8f9;
-   padding-top: 250; 
   scroll-behavior: smooth;
 }
 
+/* Improved alert styling for promo banner */
 .alert-pink {
   background-color: #ffe4ec;
   color: #d81b60;
   border: none;
-  position: sticky;
-  top: 100px; 
-  z-index: 650;
 }
 
 .hero h2 {
@@ -25,5 +22,27 @@ footer {
   transform: scale(1.03);
   transition: 0.3s;
 }
-body { padding-top: 150px; }
-@media (max-width:650px){ body{ padding-top: 140px } }
+
+/* Added responsive navigation styles */
+header .nav-link {
+  transition: color 0.2s;
+}
+
+header .nav-link:hover {
+  color: #dc3545 !important;
+}
+
+@media (max-width: 768px) {
+  body {
+    padding-top: 160px;
+  }
+
+  header .col-md-6 {
+    order: 3;
+    margin-top: 1rem;
+  }
+
+  header .col-md-3:last-child {
+    order: 2;
+  }
+}

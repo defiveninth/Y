@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout | Bloom & Beauty</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <header class="bg-light text-center py-3 shadow">
+    <h1 class="text-danger fw-bold">Bloom & Beauty</h1>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light justify-content-center">
+      <div class="navbar-nav">
+        <a class="nav-link fw-bold" href="index.html">Home</a>
+        <a class="nav-link fw-bold" href="flowers.html">Flowers</a>
+        <a class="nav-link fw-bold" href="about.html">About</a>
+        <a class="nav-link fw-bold" href="delivery.html">Delivery</a>
+        <a class="nav-link fw-bold" href="contact.html">Contact</a>
+        <div id="auth-nav"></div>
+      </div>
+    </nav>
+  </header>
+
+  <div class="container my-5">
+    <h2 class="text-danger mb-4">Checkout</h2>
+    
+    <div class="row">
+      <div class="col-md-8">
+        <div class="card mb-4">
+          <div class="card-body">
+            <h4 class="mb-3">Delivery Information</h4>
+            
+            <div id="error-message" class="alert alert-danger d-none"></div>
+            
+            <form id="checkout-form">
+              <div class="mb-3">
+                <label for="address" class="form-label">Delivery Address</label>
+                <textarea class="form-control" id="address" rows="3" required placeholder="Enter your full address"></textarea>
+              </div>
+              
+              <div class="mb-3">
+                <label for="delivery-date" class="form-label">Preferred Delivery Date</label>
+                <input type="date" class="form-control" id="delivery-date" required>
+              </div>
+              
+              <div class="mb-3">
+                <label for="notes" class="form-label">Additional Notes (Optional)</label>
+                <textarea class="form-control" id="notes" rows="2" placeholder="Any special instructions"></textarea>
+              </div>
+              
+              <button type="submit" class="btn btn-danger w-100">Place Order</button>
+            </form>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="mb-3">Order Summary</h4>
+            <div id="order-items"></div>
+            <hr>
+            <div class="d-flex justify-content-between">
+              <strong>Total:</strong>
+              <strong class="text-danger" id="order-total">0 KZT</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="bg-danger text-white text-center py-3 mt-5">
+    &copy; 2025 Bloom & Beauty | Designed by Aksunkar
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="client/js/api.js"></script>
+  <script src="client/js/auth.js"></script>
+  <script src="client/js/cart.js"></script>
+  <script>
+    // Protect this page - must be logged in
+    if (!requireAuth()) {
+      throw new Error("Unauthorized")
+    }
+    
+    // Set minimum date to today
+    const dateInput = document.getElementById("delivery-date")
+    const today = new Date().toISOString().split('T')[0]
+    dateInput.min = today
+    dateInput.value = today
+    
+    function renderOrderSummary() {
+      const cart = getCart()
+      
+      if (cart.length === 0) {
+        window.location.href = "/cart.html"
+        return
+      }
+      
+      const orderItems = document.getElementById("order-items")
+      const orderTotal = document.getElementById("order-total")
+      
+      orderItems.innerHTML = cart.map(item => `
+        <div class="d-flex justify-content-between mb-2">
+          <span>${item.name} x ${item.quantity}</span>
+          <span>${item.price * item.quantity} KZT</span>
+        </div>
+      `).join('')
+      
+      orderTotal.textContent = `${getCartTotal()} KZT`
+    }
+    
+    document.getElementById("checkout-form").addEventListener("submit", async (e) => {
+      e.preventDefault()
+      
+      const cart = getCart()
+      const address = document.getElementById("address").value
+      const deliveryDate = document.getElementById("delivery-date").value
+      const notes = document.getElementById("notes").value
+      const errorMessage = document.getElementById("error-message")
+      
+      errorMessage.classList.add("d-none")
+      
+      try {
+        const orderData = {
+          items: cart.map(item => ({
+            flowerId: item.id,
+            name: item.name,
+            price: item.price,
+            quantity: item.quantity,
+          })),
+          total: getCartTotal(),
+          deliveryAddress: address,
+          deliveryDate: deliveryDate,
+          notes: notes || "",
+        }
+        
+        const order = await ordersAPI.create(orderData)
+        
+        // Clear cart
+        clearCart()
+        
+        // Redirect to order tracking with fake delivery flow
+        window.location.href = `/order-tracking.html?orderId=${order.id}`
+      } catch (error) {
+        errorMessage.textContent = error.message
+        errorMessage.classList.remove("d-none")
+      }
+    })
+    
+    document.addEventListener("DOMContentLoaded", renderOrderSummary)
+  </script>
+</body>
+</html>
