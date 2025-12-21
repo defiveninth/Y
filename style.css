@@ -1,0 +1,29 @@
+body {
+  background-color: #fff8f9;
+   padding-top: 250; 
+  scroll-behavior: smooth;
+}
+
+.alert-pink {
+  background-color: #ffe4ec;
+  color: #d81b60;
+  border: none;
+  position: sticky;
+  top: 100px; 
+  z-index: 650;
+}
+
+.hero h2 {
+  color: #fff;
+}
+
+footer {
+  font-size: 14px;
+}
+
+.card:hover {
+  transform: scale(1.03);
+  transition: 0.3s;
+}
+body { padding-top: 150px; }
+@media (max-width:650px){ body{ padding-top: 140px } }

@@ -1,0 +1,10 @@
+[
+  {
+    "id": "admin001",
+    "email": "admin@flowers.com",
+    "password": "$2a$10$rGvH3Kj7YZ9xY5h0p8xPEOK5dJ9N7L6M8sT3qR4vP2wN1xY5z6H7K",
+    "name": "Admin User",
+    "role": "admin",
+    "createdAt": "2025-01-01T00:00:00.000Z"
+  }
+]
