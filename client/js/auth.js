@@ -41,16 +41,19 @@ function updateNavigation() {
 
   if (user) {
     authNav.innerHTML = `
-      <span class="text-dark fw-semibold me-2">Hello, ${user.name}</span>
+    <div class="d-flex align-items-center gap-2">
       ${user.role === "admin" ? '<a class="btn btn-sm btn-outline-secondary" href="/admin.html">Admin</a>' : ""}
       <a class="btn btn-sm btn-outline-secondary" href="/orders.html">Orders</a>
       <a class="btn btn-sm btn-outline-danger" href="#" onclick="logout()">Logout</a>
-    `
+    </div>
+  `
   } else {
     authNav.innerHTML = `
+    <div class="d-flex gap-2">
       <a class="btn btn-sm btn-outline-secondary" href="/login.html">Login</a>
       <a class="btn btn-sm btn-danger" href="/register.html">Register</a>
-    `
+    </div>
+  `
   }
 }
 

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,21 +12,25 @@
 <body>
   <header class="bg-light text-center py-3 shadow">
     <h1 class="text-danger fw-bold">Bloom & Beauty - Admin</h1>
+
     <nav class="navbar navbar-expand-lg navbar-light bg-light justify-content-center">
-      <div class="navbar-nav">
+      <div class="navbar-nav align-items-center">
         <a class="nav-link fw-bold" href="index.html">Home</a>
         <a class="nav-link fw-bold" href="admin.html">Admin Dashboard</a>
-        <div id="auth-nav"></div>
+
+        <div id="auth-nav" class="d-flex align-items-center"></div>
       </div>
     </nav>
   </header>
 
+
   <div class="container my-5">
     <h2 class="text-danger mb-4">Admin Dashboard</h2>
-    
+
     <ul class="nav nav-tabs mb-4" id="adminTabs" role="tablist">
       <li class="nav-item" role="presentation">
-        <button class="nav-link active" id="flowers-tab" data-bs-toggle="tab" data-bs-target="#flowers-panel" type="button">
+        <button class="nav-link active" id="flowers-tab" data-bs-toggle="tab" data-bs-target="#flowers-panel"
+          type="button">
           Manage Flowers
         </button>
       </li>
@@ -35,7 +40,7 @@
         </button>
       </li>
     </ul>
-    
+
     <div class="tab-content" id="adminTabContent">
       <!-- Flowers Management Tab -->
       <div class="tab-pane fade show active" id="flowers-panel">
@@ -44,32 +49,32 @@
             <h4 class="mb-3" id="form-title">Add New Flower</h4>
             <div id="flower-error" class="alert alert-danger d-none"></div>
             <div id="flower-success" class="alert alert-success d-none"></div>
-            
+
             <form id="add-flower-form">
               <input type="hidden" id="flower-id">
-              
+
               <div class="row">
                 <div class="col-md-6 mb-3">
                   <label for="flower-name" class="form-label">Flower Name</label>
                   <input type="text" class="form-control" id="flower-name" required>
                 </div>
-                
+
                 <div class="col-md-6 mb-3">
                   <label for="flower-price" class="form-label">Price (KZT)</label>
                   <input class="form-control" id="flower-price" required min="0">
                 </div>
               </div>
-              
+
               <div class="mb-3">
                 <label for="flower-description" class="form-label">Description</label>
                 <textarea class="form-control" id="flower-description" rows="2"></textarea>
               </div>
-              
+
               <div class="mb-3">
                 <label for="flower-image" class="form-label">Image URL</label>
                 <input type="url" class="form-control" id="flower-image" placeholder="https://example.com/image.jpg">
               </div>
-              
+
               <div class="mb-3">
                 <label for="flower-category" class="form-label">Category</label>
                 <select class="form-select" id="flower-category">
@@ -81,36 +86,37 @@
                   <option value="other">Other</option>
                 </select>
               </div>
-              
+
               <button type="submit" class="btn btn-danger" id="submit-btn">Add Flower</button>
-              <button type="button" class="btn btn-secondary d-none" id="cancel-btn" onclick="cancelEdit()">Cancel</button>
+              <button type="button" class="btn btn-secondary d-none" id="cancel-btn"
+                onclick="cancelEdit()">Cancel</button>
             </form>
           </div>
         </div>
-        
+
         <div class="card">
           <div class="card-body">
             <h4 class="mb-3">All Flowers</h4>
-            
+
             <div id="flowers-loading" class="text-center my-3">
               <div class="spinner-border text-danger" role="status"></div>
             </div>
-            
+
             <div id="flowers-table"></div>
           </div>
         </div>
       </div>
-      
+
       <!-- Orders Management Tab -->
       <div class="tab-pane fade" id="orders-panel">
         <div class="card">
           <div class="card-body">
             <h4 class="mb-3">All Orders</h4>
-            
+
             <div id="orders-loading" class="text-center my-3">
               <div class="spinner-border text-danger" role="status"></div>
             </div>
-            
+
             <div id="orders-table"></div>
           </div>
         </div>
@@ -130,21 +136,21 @@
     if (!requireAdmin()) {
       throw new Error("Unauthorized")
     }
-    
+
     // Load flowers
     async function loadFlowers() {
       const loading = document.getElementById("flowers-loading")
       const table = document.getElementById("flowers-table")
-      
+
       try {
         const flowers = await flowersAPI.getAll()
         loading.style.display = "none"
-        
+
         if (flowers.length === 0) {
           table.innerHTML = '<p class="text-center">No flowers yet</p>'
           return
         }
-        
+
         table.innerHTML = `
           <div class="table-responsive">
             <table class="table table-striped">
@@ -183,17 +189,17 @@
         table.innerHTML = `<div class="alert alert-danger">Error: ${error.message}</div>`
       }
     }
-    
+
     // Add flower
     document.getElementById("add-flower-form").addEventListener("submit", async (e) => {
       e.preventDefault()
-      
+
       const errorDiv = document.getElementById("flower-error")
       const successDiv = document.getElementById("flower-success")
-      
+
       errorDiv.classList.add("d-none")
       successDiv.classList.add("d-none")
-      
+
       try {
         const flowerData = {
           name: document.getElementById("flower-name").value,
@@ -202,9 +208,9 @@
           image: document.getElementById("flower-image").value,
           category: document.getElementById("flower-category").value,
         }
-        
+
         const flowerId = document.getElementById("flower-id").value
-        
+
         if (flowerId) {
           // Update existing flower
           await flowersAPI.update(flowerId, flowerData)
@@ -214,7 +220,7 @@
           await flowersAPI.create(flowerData)
           successDiv.textContent = "Flower added successfully!"
         }
-        
+
         successDiv.classList.remove("d-none")
         cancelEdit()
         loadFlowers()
@@ -223,7 +229,7 @@
         errorDiv.classList.remove("d-none")
       }
     })
-    
+
     // Edit flower
     function editFlower(flower) {
       document.getElementById("flower-id").value = flower.id
@@ -232,15 +238,15 @@
       document.getElementById("flower-description").value = flower.description || ""
       document.getElementById("flower-image").value = flower.image || ""
       document.getElementById("flower-category").value = flower.category || "other"
-      
+
       document.getElementById("form-title").textContent = "Edit Flower"
       document.getElementById("submit-btn").textContent = "Update Flower"
       document.getElementById("cancel-btn").classList.remove("d-none")
-      
+
       // Scroll to form
       document.getElementById("add-flower-form").scrollIntoView({ behavior: "smooth" })
     }
-    
+
     // Cancel edit
     function cancelEdit() {
       document.getElementById("add-flower-form").reset()
@@ -249,11 +255,11 @@
       document.getElementById("submit-btn").textContent = "Add Flower"
       document.getElementById("cancel-btn").classList.add("d-none")
     }
-    
+
     // Delete flower
     async function deleteFlower(id) {
       if (!confirm("Are you sure you want to delete this flower?")) return
-      
+
       try {
         await flowersAPI.delete(id)
         loadFlowers()
@@ -261,21 +267,21 @@
         alert(`Error: ${error.message}`)
       }
     }
-    
+
     // Load orders
     async function loadOrders() {
       const loading = document.getElementById("orders-loading")
       const table = document.getElementById("orders-table")
-      
+
       try {
         const orders = await ordersAPI.getAll()
         loading.style.display = "none"
-        
+
         if (orders.length === 0) {
           table.innerHTML = '<p class="text-center">No orders yet</p>'
           return
         }
-        
+
         table.innerHTML = `
           <div class="table-responsive">
             <table class="table table-striped">
@@ -321,7 +327,7 @@
         table.innerHTML = `<div class="alert alert-danger">Error: ${error.message}</div>`
       }
     }
-    
+
     // Update order status
     async function updateOrderStatus(orderId, status) {
       try {
@@ -332,7 +338,7 @@
         loadOrders()
       }
     }
-    
+
     // View order details
     function viewOrderDetails(orderId) {
       ordersAPI.getAll().then(orders => {
@@ -342,16 +348,17 @@
         }
       })
     }
-    
+
     // Initialize
     document.addEventListener("DOMContentLoaded", () => {
       loadFlowers()
     })
-    
+
     // Load orders when tab is clicked
     document.getElementById("orders-tab").addEventListener("click", () => {
       loadOrders()
     })
   </script>
 </body>
+
 </html>
